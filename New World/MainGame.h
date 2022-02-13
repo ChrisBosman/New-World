@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include "Board.h"
 
 class MainGame
 {
@@ -37,4 +38,5 @@ private:
 	int windowWidth;
 	int windowHeight;
 	SDL_Texture* backgroundTex = nullptr;
+	Board board;
 };

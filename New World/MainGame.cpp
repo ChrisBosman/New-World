@@ -89,8 +89,11 @@ void MainGame::processInput() {
 			break;
 		case SDL_MOUSEBUTTONDOWN: //when mouse is presed 
 			if (event.button.button == SDL_BUTTON_LEFT) {
-				//testing if clicked inside the hexagon
-				if((event.button.x-10)*(event.button.x - 10) + (event.button.y-10)* (event.button.y - 10) < R*R)
+				//testing if clicked inside the hexagon (cirle)
+				if ((event.button.x - 610) * (event.button.x - 610) + (event.button.y - 195) * (event.button.y - 195) < 111 * 111) {
+					std::cout << "Clicked on Hexagon\n";
+					
+				}
 			}
 			break;
 		}
