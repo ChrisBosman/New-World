@@ -2,18 +2,21 @@
 
 
 //constructor
-Deck::Deck(std::vector<Card> _cards) {
+Deck::Deck(std::vector<Card*> _cards) {
 	cards = _cards;
 }
 
 //destructor
 Deck::~Deck() {
-
+	for (int i = 0; i < cards.size(); i++)
+		delete(cards[i]);
+	for (int i = 0; i < discardedCards.size(); i++)
+		delete(discardedCards[i]);
 }
 
 //Returns the top card of the deck/pile
-Card Deck::drawCard(bool discardCard = false){
-	Card topCard = cards.front();
+Card* Deck::drawCard(bool discardCard = false){
+	Card* topCard = cards.front();
 	if (discardCard) {
 		cards.erase(cards.begin()); //remove card
 		discardedCards.push_back(topCard); //move card to discard pile
@@ -21,6 +24,14 @@ Card Deck::drawCard(bool discardCard = false){
 	else
 		cards.push_back(topCard); //move card to bottom of pile
 	return topCard;
+}
+
+//Peek at a card, by default the top card (=0)
+Card* Deck::peekCard(int8_t num)
+{
+	if (num == 0)
+		return cards.front();
+	return cards[cards.size() - num - 1];
 }
 
 //shuffel the deck/pile

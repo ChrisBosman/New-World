@@ -10,11 +10,12 @@
 class Deck
 {
 public:
-	Deck(std::vector<Card> _cards);
+	Deck(std::vector<Card*> _cards);
 	~Deck();
-	Card drawCard(bool discardCard); //return the top card
+	Card* drawCard(bool discardCard); //return the top card
+	Card* peekCard(int8_t num = 0);//peek at a card, default=topCard
 	void shuffel();
 private:
-	std::vector<Card> cards;
-	std::vector<Card> discardedCards;
+	std::vector<Card*> cards;
+	std::vector<Card*> discardedCards;
 };

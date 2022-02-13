@@ -10,11 +10,15 @@ class Card
 {
 public:
 	Card(); //contructor for an empty card
-	Card(uint8_t, SDL_Renderer*); //negative numbers for land cards and positive numbers for action cards
+	Card(int8_t, SDL_Renderer*); //negative numbers for land cards and positive numbers for action cards
 	~Card();
 	SDL_Texture* getTexture();
+	int16_t getRotation() { return rotation; };
+	void rotateLeft();
+	void rotateRight();
 private:
 	SDL_Texture* tex = nullptr;
-	uint8_t id;
+	int8_t id;
+	int16_t rotation = 0; //in degrees
 };
 

@@ -32,11 +32,11 @@ private:
 	void initTextures();
 	void createTexture(const char*,SDL_Texture*&);
 	//private variables
-	bool isRunning;
+	bool isRunning = false;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	int windowWidth;
 	int windowHeight;
 	SDL_Texture* backgroundTex = nullptr;
-	Board board;
+	Board* board = nullptr;
 };

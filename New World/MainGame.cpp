@@ -21,9 +21,8 @@ MainGame::MainGame(int _windowWidth, int _windowHeight) {
 
 //Destructor
 MainGame::~MainGame() {
+	delete(board);
 	clean();
-	delete(window);
-	delete(renderer);
 }
 
 
@@ -62,6 +61,8 @@ void MainGame::initSystems(const char* title, bool fullscreen) {
 		fatalError("SDL could not be initialised");
 	}
 	initTextures();
+	//init board
+	board = new Board(renderer);
 }
 
 void MainGame::initTextures() {
@@ -92,7 +93,7 @@ void MainGame::processInput() {
 				//testing if clicked inside the hexagon (cirle)
 				if ((event.button.x - 610) * (event.button.x - 610) + (event.button.y - 195) * (event.button.y - 195) < 111 * 111) {
 					std::cout << "Clicked on Hexagon\n";
-					
+					board->startPlacingTile();
 				}
 			}
 			break;

@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
 	}
 
-	mainGame->clean();
+	delete(mainGame); //clean everything
 	return 0;
-	delete(mainGame);
+
 }
