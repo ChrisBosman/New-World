@@ -1,7 +1,7 @@
 #include "Board.h"
 //constructor
-Board::Board(SDL_Renderer* _renderer)
-:renderer(_renderer)
+Board::Board(SDL_Renderer* _renderer,SDL_Texture* _tex)
+:renderer(_renderer), boardTex(_tex)
 {
 	//create a deck for the landCards
 	std::vector<Card*> landCards;
@@ -62,6 +62,14 @@ void Board::proccesUserInput(Card* card) {
 		case SDL_MOUSEMOTION: //when the mouse moves
 			mousePosX = event.motion.x;
 			mousePosY = event.motion.y;
+
+			//testing, get the coords:
+			int16_t rTest, qTest,xT,yT;
+			pixelToPointyHex(mousePosX, mousePosY, &rTest, &qTest);
+			std::cout << "x = " << mousePosX << "\t" << "y = " << mousePosY << "\n";
+			std::cout << "r = " << rTest << "\t" << "q = " << qTest << "\n";
+			pointyHexToPixel(rTest, qTest, &xT, &yT);
+			std::cout << "xT = " << xT << "\t" << "yT = " << yT << "\n";
 		}
 	}
 }
@@ -72,6 +80,7 @@ void Board::render(SDL_Texture* tex, Card* card)
 	destRect.h = 64; destRect.w = 64;
 	destRect.x = mousePosX - 32; destRect.y = mousePosY - 32;
 	SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, boardTex, NULL, NULL);
 	SDL_RenderCopyEx(renderer, tex, NULL, &destRect,card->getRotation(),NULL,SDL_FLIP_NONE); //rotate and plot
 	SDL_RenderPresent(renderer);
 }
@@ -94,8 +103,8 @@ void Board::tryPlacingTile(int16_t x, int16_t y,Card* card)
 
 //change haxagon (r,q) to pixel (x,y)
 void Board::pointyHexToPixel(int16_t r, int16_t q, int16_t* x, int16_t* y){
-	*x = hexSize * (sqrt(3) * q + sqrt(3)/2 * r);
-	*y = hexSize * (				3.0 / 2 * r);
+	*x = hexSize/2 * (sqrt(3) * q + sqrt(3)/2 * r);
+	*y = hexSize/2 * (				3.0 / 2 * r);
 }
 
 //change pixel (x,y) to hexagon (r,q)
@@ -103,8 +112,8 @@ void Board::pixelToPointyHex(int16_t x, int16_t y, int16_t* r, int16_t* q)
 {
 	//change pixel to hexagonal coordinates (axial)
 	
-	double q_d = (sqrt(3) / 3 * x - 1. / 3 * y) / hexSize;
-	double r_d = (					2. / 3 * y) / hexSize;
+	double q_d = (sqrt(3) / 3 * x - 1. / 3 * y) / (hexSize/2);
+	double r_d = (					2. / 3 * y) / (hexSize/2);
 
 	// ---rounding---\\
 	//quickly
@@ -132,7 +141,7 @@ void Board::getTexture(SDL_Texture* tex){
 	//set tex as renderer target
 	SDL_SetRenderTarget(renderer, tex); 
 	//reset texture
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 	SDL_RenderClear(renderer);
 	//draw on the texture
 	int16_t* mX = new int16_t;
@@ -141,7 +150,7 @@ void Board::getTexture(SDL_Texture* tex){
 		for (int j = 0; j < boardSize; j++) {
 			if (board[i][j] != nullptr) { //if there is a tile
 				//het the pixel that is in the center of the hex
-				pointyHexToPixel(i, j, mX, mY);
+				pointyHexToPixel(i, j- (int16_t)(i / 2), mX, mY);
 				SDL_Rect destRect;
 				destRect.x = *mX - hexSize / 2; destRect.y = *mY - hexSize / 2;
 				destRect.h = hexSize; destRect.w = hexSize;

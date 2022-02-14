@@ -62,7 +62,7 @@ void MainGame::initSystems(const char* title, bool fullscreen) {
 	}
 	initTextures();
 	//init board
-	board = new Board(renderer);
+	board = new Board(renderer,boardTex);
 }
 
 void MainGame::initTextures() {

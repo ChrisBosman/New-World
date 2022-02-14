@@ -7,7 +7,7 @@ class Board
 {
 public:
 	//functions
-	Board(SDL_Renderer*);
+	Board(SDL_Renderer*,SDL_Texture*);
 	~Board();
 	void startPlacingTile(); //start the placement of the tile
 	void getTexture(SDL_Texture*); //renders the board on a texture
@@ -23,6 +23,7 @@ private:
 	static const int boardSize = 64;
 	const uint8_t hexSize = 64;
 	SDL_Renderer* renderer;
+	SDL_Texture* boardTex = nullptr;
 	bool isPlacingTile = false; //if the user is placing a tile right now.
 	int16_t mousePosX=0, mousePosY=0; //the mouse positions
 	Deck* landDeck = nullptr;
