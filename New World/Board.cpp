@@ -24,6 +24,8 @@ void Board::startPlacingTile() {
 	//peek at a card from the pile of land cards (landDeck)
 	SDL_Texture* cardTex;
 	Card* card = landDeck->peekCard();
+	if (card == nullptr) //if no card, stop
+		return;
 	cardTex = card->getTexture();
 	isPlacingTile = true; //the user is now placing a tile
 	while (isPlacingTile)
@@ -31,6 +33,7 @@ void Board::startPlacingTile() {
 		proccesUserInput(card);
 		render(cardTex,card);
 	}
+	landDeck->drawCard(true);
 }
 
 void Board::proccesUserInput(Card* card) {
@@ -54,7 +57,7 @@ void Board::proccesUserInput(Card* card) {
 			break;
 		case SDL_MOUSEBUTTONDOWN: //when mouse is presed
 			if (event.button.button == SDL_BUTTON_LEFT)
-				tryPlacingTile(event.button.x, event.button.y); //try to place a tile
+				tryPlacingTile(event.button.x, event.button.y,card); //try to place a tile
 				break;
 		case SDL_MOUSEMOTION: //when the mouse moves
 			mousePosX = event.motion.x;
@@ -73,7 +76,83 @@ void Board::render(SDL_Texture* tex, Card* card)
 	SDL_RenderPresent(renderer);
 }
 
-bool Board::tryPlacingTile(__int16, __int16)
+void Board::tryPlacingTile(int16_t x, int16_t y,Card* card)
 {
-	return false;
+	int16_t* r = new int16_t;
+	int16_t* q = new int16_t;
+	pixelToPointyHex(x, y, r, q);
+	if (*r < boardSize && *q < boardSize && *r >= 0 && *q >= 0) {
+		if (board[*r][*q + (int16_t)(*r / 2)] == nullptr) {
+			board[*r][*q + (int16_t)(*r / 2)] = card;
+			isPlacingTile = false;
+		}
+	}
+	//clean up
+	delete(r);
+	delete(q);
+}
+
+//change haxagon (r,q) to pixel (x,y)
+void Board::pointyHexToPixel(int16_t r, int16_t q, int16_t* x, int16_t* y){
+	*x = hexSize * (sqrt(3) * q + sqrt(3)/2 * r);
+	*y = hexSize * (				3.0 / 2 * r);
+}
+
+//change pixel (x,y) to hexagon (r,q)
+void Board::pixelToPointyHex(int16_t x, int16_t y, int16_t* r, int16_t* q)
+{
+	//change pixel to hexagonal coordinates (axial)
+	
+	double q_d = (sqrt(3) / 3 * x - 1. / 3 * y) / hexSize;
+	double r_d = (					2. / 3 * y) / hexSize;
+
+	// ---rounding---\\
+	//quickly
+	double s_d = -q_d - r_d;//since we are using axial we need to calcuate s
+	*q = (int16_t)round(q_d);
+	*r = (int16_t)round(r_d);
+	int16_t s = round(s_d);
+
+	//fix the constraint q+r+s=0
+	double q_diff = abs(*q - q_d);
+	double r_diff = abs(*r - r_d);
+	double s_diff = abs(s - s_d);
+
+	if (q_diff > r_diff && q_diff > s_diff) {
+		*q = -*r - s;
+	}
+	else if(r_diff > s_diff) {
+		*r = -*q - s;
+	}
+
+}
+
+//render the board to a texture
+void Board::getTexture(SDL_Texture* tex){
+	//set tex as renderer target
+	SDL_SetRenderTarget(renderer, tex); 
+	//reset texture
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+	SDL_RenderClear(renderer);
+	//draw on the texture
+	int16_t* mX = new int16_t;
+	int16_t* mY = new int16_t;
+	for (int i = 0; i < boardSize; i++) {
+		for (int j = 0; j < boardSize; j++) {
+			if (board[i][j] != nullptr) { //if there is a tile
+				//het the pixel that is in the center of the hex
+				pointyHexToPixel(i, j, mX, mY);
+				SDL_Rect destRect;
+				destRect.x = *mX - hexSize / 2; destRect.y = *mY - hexSize / 2;
+				destRect.h = hexSize; destRect.w = hexSize;
+				//draw card
+				SDL_RenderCopy(renderer, board[i][j]->getTexture(), NULL, &destRect);
+			}
+		}
+	}
+	//delete pointers
+	delete(mX);
+	delete(mY);
+	//reset renderer target
+	SDL_SetRenderTarget(renderer, NULL); 
 }

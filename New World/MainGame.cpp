@@ -66,6 +66,10 @@ void MainGame::initSystems(const char* title, bool fullscreen) {
 }
 
 void MainGame::initTextures() {
+	//create a texture where the fractal can be drawn on
+	boardTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
+	if (!boardTex)
+		fatalError("Board texture could not be created\n");
 	//init textures here using createTexture(filePath,tex);
 	createTexture("assets/TestBackground.png", backgroundTex);
 }
@@ -94,6 +98,7 @@ void MainGame::processInput() {
 				if ((event.button.x - 610) * (event.button.x - 610) + (event.button.y - 195) * (event.button.y - 195) < 111 * 111) {
 					std::cout << "Clicked on Hexagon\n";
 					board->startPlacingTile();
+					board->getTexture(boardTex);
 				}
 			}
 			break;
@@ -112,6 +117,7 @@ void MainGame::render() {
 	SDL_RenderClear(renderer);
 	//things to render
 	SDL_RenderCopy(renderer,backgroundTex,NULL,NULL);
+	SDL_RenderCopy(renderer, boardTex, NULL, NULL);
 	SDL_RenderPresent(renderer);
 }
 

@@ -16,6 +16,8 @@ Deck::~Deck() {
 
 //Returns the top card of the deck/pile
 Card* Deck::drawCard(bool discardCard = false){
+	if (cards.empty())
+		return nullptr;
 	Card* topCard = cards.front();
 	if (discardCard) {
 		cards.erase(cards.begin()); //remove card
@@ -29,6 +31,8 @@ Card* Deck::drawCard(bool discardCard = false){
 //Peek at a card, by default the top card (=0)
 Card* Deck::peekCard(int8_t num)
 {
+	if (cards.empty()) //if no card then return null
+		return nullptr;
 	if (num == 0)
 		return cards.front();
 	return cards[cards.size() - num - 1];

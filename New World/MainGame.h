@@ -38,5 +38,6 @@ private:
 	int windowWidth;
 	int windowHeight;
 	SDL_Texture* backgroundTex = nullptr;
+	SDL_Texture* boardTex = nullptr;
 	Board* board = nullptr;
 };
